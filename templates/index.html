@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat App</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+</head>
+<body>
+    <h1>Real-Time Chat App</h1>
+    <div id="messages"></div>
+    <input id="input" type="text" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        var socket = io();
+
+        socket.on('message', function(msg) {
+            var messagesDiv = document.getElementById('messages');
+            var messageElement = document.createElement('p');
+            messageElement.textContent = msg;
+            messagesDiv.appendChild(messageElement);
+        });
+
+        function sendMessage() {
+            var input = document.getElementById('input');
+            var message = input.value;
+            if(message){
+                socket.send(message);
+                input.value = '';
+            }
+            
+        }
+    </script>
+</body>
+</html>

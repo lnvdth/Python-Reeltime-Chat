@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Phòng Chat - {{ username }}</div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="chat-input">
+            <input type="text" id="input" placeholder="Nhập tin nhắn...">
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
+    <script>
+        var socket = io();
+        var username = "{{ username }}";
+
+        socket.on("message", function(msg) {
+            var chatBox = document.getElementById("chat-box");
+            var messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            
+            if (msg.username === username) {
+                messageElement.classList.add("sent");
+            } else {
+                messageElement.classList.add("received");
+            }
+
+            messageElement.innerHTML = `
+                <p><strong>${msg.username}:</strong> ${msg.message}</p>
+                <span class="time" style="font: 2pt">${msg.time}</span>
+            `;
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        function sendMessage() {
+            var input = document.getElementById("input");
+            var message = input.value.trim();
+            if (message === "") return;
+
+            socket.send({"message": message});
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
